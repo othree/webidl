@@ -1,0 +1,12 @@
+{
+  "name": "webidl-fetcher",
+  "version": "0.0.1",
+  "author": "othree (https://github.com/othree)",
+  "main": "./index.js",
+  "dependencies": {
+    "cheerio": "*",
+    "request": "*",
+    "exec-sync": "*"
+  },
+  "license": "MIT"
+}
