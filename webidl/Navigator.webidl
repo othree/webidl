@@ -162,22 +162,6 @@ callback interface MozIdleObserver {
   void onactive();
 };
 
-#ifdef MOZ_B2G
-dictionary MobileIdOptions {
-  boolean forceSelection = false;
-};
-
-[NoInterfaceObject]
-interface NavigatorMobileId {
-    // Ideally we would use [CheckPermissions] here, but the "mobileid"
-    // permission is set to PROMPT_ACTION and [CheckPermissions] only checks
-    // for ALLOW_ACTION.
-    // XXXbz what is this promise resolved with?
-    [Throws, NewObject, Func="Navigator::HasMobileIdSupport"]
-    Promise<any> getMobileIdAssertion(optional MobileIdOptions options);
-};
-Navigator implements NavigatorMobileId;
-#endif // MOZ_B2G
 
 // nsIDOMNavigator
 partial interface Navigator {
@@ -254,16 +238,10 @@ partial interface Navigator {
 
 // nsIDOMNavigatorDesktopNotification
 partial interface Navigator {
-  [Throws, Pref="notification.feature.enabled"]
+  [Throws, Pref="notification.feature.enabled", UnsafeInPrerendering]
   readonly attribute DesktopNotificationCenter mozNotification;
 };
 
-#ifdef MOZ_WEBSMS_BACKEND
-partial interface Navigator {
-  [CheckPermissions="sms", Pref="dom.sms.enabled"]
-  readonly attribute MozMobileMessageManager? mozMobileMessage;
-};
-#endif
 
 // NetworkInformation
 partial interface Navigator {
@@ -273,7 +251,7 @@ partial interface Navigator {
 
 // nsIDOMNavigatorCamera
 partial interface Navigator {
-  [Throws, Func="Navigator::HasCameraSupport"]
+  [Throws, Func="Navigator::HasCameraSupport", UnsafeInPrerendering]
   readonly attribute CameraManager mozCameras;
 };
 
@@ -287,77 +265,22 @@ partial interface Navigator {
   boolean mozHasPendingMessage (DOMString type);
 };
 
-#ifdef MOZ_B2G_RIL
-partial interface Navigator {
-  [Throws, Pref="dom.mobileconnection.enabled", CheckPermissions="mobileconnection mobilenetwork"]
-  readonly attribute MozMobileConnectionArray mozMobileConnections;
-};
 
-partial interface Navigator {
-  [Throws, Pref="dom.cellbroadcast.enabled", CheckPermissions="cellbroadcast"]
-  readonly attribute MozCellBroadcast mozCellBroadcast;
-};
-
-partial interface Navigator {
-  [Throws, Pref="dom.voicemail.enabled", CheckPermissions="voicemail"]
-  readonly attribute MozVoicemail mozVoicemail;
-};
-
-partial interface Navigator {
-  [Throws, Pref="dom.icc.enabled", CheckPermissions="mobileconnection"]
-  readonly attribute MozIccManager? mozIccManager;
-};
-
-partial interface Navigator {
-  [Throws, Pref="dom.telephony.enabled", CheckPermissions="telephony"]
-  readonly attribute Telephony? mozTelephony;
-};
-#endif // MOZ_B2G_RIL
-
-#ifdef MOZ_GAMEPAD
 // https://dvcs.w3.org/hg/gamepad/raw-file/default/gamepad.html#navigator-interface-extension
 partial interface Navigator {
   [Throws, Pref="dom.gamepad.enabled"]
   sequence<Gamepad?> getGamepads();
 };
-#endif // MOZ_GAMEPAD
 
 partial interface Navigator {
   [Throws, Pref="dom.vr.enabled"]
   Promise<sequence<VRDevice>> getVRDevices();
 };
 
-#ifdef MOZ_B2G_BT
-partial interface Navigator {
-  [Throws, CheckPermissions="bluetooth"]
-  readonly attribute BluetoothManager mozBluetooth;
-};
-#endif // MOZ_B2G_BT
 
-#ifdef MOZ_B2G_FM
-partial interface Navigator {
-  [Throws, CheckPermissions="fmradio"]
-  readonly attribute FMRadio mozFMRadio;
-};
-#endif // MOZ_B2G_FM
 
-#ifdef MOZ_TIME_MANAGER
-// nsIDOMMozNavigatorTime
-partial interface Navigator {
-  [Throws, CheckPermissions="time"]
-  readonly attribute MozTimeManager mozTime;
-};
-#endif // MOZ_TIME_MANAGER
 
-#ifdef MOZ_AUDIO_CHANNEL_MANAGER
-// nsIMozNavigatorAudioChannelManager
-partial interface Navigator {
-  [Throws]
-  readonly attribute AudioChannelManager mozAudioChannelManager;
-};
-#endif // MOZ_AUDIO_CHANNEL_MANAGER
 
-#ifdef MOZ_MEDIA_NAVIGATOR
 callback NavigatorUserMediaSuccessCallback = void (MediaStream stream);
 callback NavigatorUserMediaErrorCallback = void (MediaStreamError error);
 
@@ -366,7 +289,7 @@ partial interface Navigator {
   readonly attribute MediaDevices mediaDevices;
 
   // Deprecated. Use mediaDevices.getUserMedia instead.
-  [Throws, Func="Navigator::HasUserMediaSupport"]
+  [Throws, Func="Navigator::HasUserMediaSupport", UnsafeInPrerendering]
   void mozGetUserMedia(MediaStreamConstraints constraints,
                        NavigatorUserMediaSuccessCallback successCallback,
                        NavigatorUserMediaErrorCallback errorCallback);
@@ -384,7 +307,6 @@ partial interface Navigator {
                               // navigated away. It is optional only as legacy.
                               optional unsigned long long innerWindowID = 0);
 };
-#endif // MOZ_MEDIA_NAVIGATOR
 
 // Service Workers/Navigation Controllers
 partial interface Navigator {
@@ -403,11 +325,9 @@ partial interface Navigator {
   readonly attribute TVManager? tv;
 };
 
-#ifdef MOZ_EME
 partial interface Navigator {
   [Pref="media.eme.enabled", Throws, NewObject]
   Promise<MediaKeySystemAccess>
   requestMediaKeySystemAccess(DOMString keySystem,
                               optional sequence<MediaKeySystemOptions> supportedConfigurations);
 };
-#endif

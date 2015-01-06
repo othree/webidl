@@ -27,8 +27,8 @@ typedef any Transferable;
 [PrimaryGlobal, NeedResolve]
 /*sealed*/ interface Window : EventTarget {
   // the current browsing context
-  [Unforgeable, Throws,
-   CrossOriginReadable] readonly attribute WindowProxy window;
+  [Unforgeable, Constant, StoreInSlot,
+   CrossOriginReadable] readonly attribute Window window;
   [Replaceable, Throws,
    CrossOriginReadable] readonly attribute WindowProxy self;
   [Unforgeable, StoreInSlot, Pure] readonly attribute Document? document;
@@ -67,9 +67,7 @@ typedef any Transferable;
 
   // the user agent
   [Throws] readonly attribute Navigator navigator; 
-#ifdef HAVE_SIDEBAR
   [Replaceable, Throws] readonly attribute External external;
-#endif
   [Throws] readonly attribute ApplicationCache applicationCache;
 
   // user prompts
@@ -235,7 +233,6 @@ partial interface Window {
   [Throws] readonly attribute nsIDOMCrypto crypto;
 };
 
-#ifdef MOZ_WEBSPEECH
 // http://dvcs.w3.org/hg/speech-api/raw-file/tip/speechapi.html
 [NoInterfaceObject]
 interface SpeechSynthesisGetter {
@@ -243,7 +240,6 @@ interface SpeechSynthesisGetter {
 };
 
 Window implements SpeechSynthesisGetter;
-#endif
 
 // http://www.whatwg.org/specs/web-apps/current-work/
 [NoInterfaceObject]
@@ -353,11 +349,6 @@ partial interface Window {
            attribute EventHandler onuserproximity;
            attribute EventHandler ondevicelight;
 
-#ifdef MOZ_B2G
-           attribute EventHandler onmoztimechange;
-           attribute EventHandler onmoznetworkupload;
-           attribute EventHandler onmoznetworkdownload;
-#endif
 
   void                      dump(DOMString str);
 
@@ -395,13 +386,11 @@ partial interface Window {
   readonly attribute Console console;
 };
 
-#ifdef HAVE_SIDEBAR
 // Mozilla extension
 partial interface Window {
   [Replaceable, Throws]
   readonly attribute (External or WindowProxy) sidebar;
 };
-#endif
 
 [Func="IsChromeOrXBL"]
 interface ChromeWindow {

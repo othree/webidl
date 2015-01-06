@@ -110,9 +110,9 @@ partial interface HTMLMediaElement {
   [Func="IsChromeOrXBL"] attribute boolean mozIsCasting;
 
   // Mozilla extension: stream capture
-  [Throws]
+  [Throws, UnsafeInPrerendering]
   MediaStream mozCaptureStream();
-  [Throws]
+  [Throws, UnsafeInPrerendering]
   MediaStream mozCaptureStreamUntilEnded();
   readonly attribute boolean mozAudioCaptured;
 
@@ -144,7 +144,6 @@ enum MediaWaitingFor {
   "key"
 };
 
-#ifdef MOZ_EME
 // Encrypted Media Extensions
 partial interface HTMLMediaElement {
   [Pref="media.eme.enabled"]
@@ -160,4 +159,3 @@ partial interface HTMLMediaElement {
   [Pref="media.eme.enabled"]
   readonly attribute MediaWaitingFor waitingFor;
 };
-#endif
