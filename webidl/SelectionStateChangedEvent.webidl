@@ -12,10 +12,13 @@ enum SelectionState {
   "selectall",
   "collapsetostart",
   "collapsetoend",
-  "blur"
+  "blur",
+  "updateposition",
+  "taponcaret"
 };
 
 dictionary SelectionStateChangedEventInit : EventInit {
+  boolean visible = true;
   DOMString selectedText = "";
   DOMRectReadOnly? boundingClientRect = null;
   sequence<SelectionState> states = [];
@@ -24,6 +27,7 @@ dictionary SelectionStateChangedEventInit : EventInit {
 [Constructor(DOMString type, optional SelectionStateChangedEventInit eventInit),
  ChromeOnly]
 interface SelectionStateChangedEvent : Event {
+  readonly attribute boolean visible;
   readonly attribute DOMString selectedText;
   readonly attribute DOMRectReadOnly? boundingClientRect;
   [Cached, Pure] readonly attribute sequence<SelectionState> states;

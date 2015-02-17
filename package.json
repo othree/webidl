@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "author": "othree (https://github.com/othree)",
   "main": "./index.js",
+  "repository": "https://github.com/othree/webidl.git",
   "dependencies": {
     "cheerio": "*",
     "request": "*",
