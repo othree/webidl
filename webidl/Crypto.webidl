@@ -4,18 +4,18 @@
  * You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  * The origin of this IDL file is
- * https://dvcs.w3.org/hg/webcrypto-api/raw-file/tip/spec/Overview.html#crypto-interface
+ * http://www.w3.org/TR/WebCryptoAPI/
  */
 
 [NoInterfaceObject]
-interface GlobalCrypto {
-  [Throws] readonly attribute Crypto crypto;
-};
-
-//[Exposed=(Window,Worker)]
-interface Crypto {
-  readonly attribute SubtleCrypto subtle;
-
+interface RandomSource {
   [Throws]
   ArrayBufferView getRandomValues(ArrayBufferView array);
+};
+
+Crypto implements RandomSource;
+
+interface Crypto {
+  [Pref="dom.webcrypto.enabled"]
+  readonly attribute SubtleCrypto subtle;
 };

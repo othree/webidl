@@ -47,7 +47,6 @@ interface NavigatorID {
   readonly attribute DOMString product; // constant "Gecko"
 
   // Everyone but WebKit/Blink supports this.  See bug 679971.
-  [Exposed=Window]
   boolean taintEnabled(); // constant false
 };
 
@@ -133,7 +132,7 @@ Navigator implements NavigatorBattery;
 [NoInterfaceObject,
  Exposed=(Window,Worker)]
 interface NavigatorDataStore {
-    [NewObject, Func="Navigator::HasDataStoreSupport"]
+    [Throws, NewObject, Func="Navigator::HasDataStoreSupport"]
     Promise<sequence<DataStore>> getDataStores(DOMString name,
                                                optional DOMString? owner = null);
 };
@@ -163,22 +162,6 @@ callback interface MozIdleObserver {
   void onactive();
 };
 
-#ifdef MOZ_B2G
-dictionary MobileIdOptions {
-  boolean forceSelection = false;
-};
-
-[NoInterfaceObject]
-interface NavigatorMobileId {
-    // Ideally we would use [CheckPermissions] here, but the "mobileid"
-    // permission is set to PROMPT_ACTION and [CheckPermissions] only checks
-    // for ALLOW_ACTION.
-    // XXXbz what is this promise resolved with?
-    [NewObject, Func="Navigator::HasMobileIdSupport"]
-    Promise<any> getMobileIdAssertion(optional MobileIdOptions options);
-};
-Navigator implements NavigatorMobileId;
-#endif // MOZ_B2G
 
 // nsIDOMNavigator
 partial interface Navigator {
@@ -194,7 +177,7 @@ partial interface Navigator {
   readonly attribute boolean cookieEnabled;
   [Throws]
   readonly attribute DOMString buildID;
-  [Throws, CheckPermissions="power", UnsafeInPrerendering]
+  [Throws, CheckPermissions="power"]
   readonly attribute MozPowerManager mozPower;
 
   // WebKit/Blink/Trident/Presto support this.
@@ -241,7 +224,7 @@ partial interface Navigator {
    *
    * @param aTopic resource name
    */
-  [Throws, Pref="dom.wakelock.enabled", Func="Navigator::HasWakeLockSupport", UnsafeInPrerendering]
+  [Throws, Pref="dom.wakelock.enabled", Func="Navigator::HasWakeLockSupport"]
   MozWakeLock requestWakeLock(DOMString aTopic);
 };
 
@@ -259,12 +242,6 @@ partial interface Navigator {
   readonly attribute DesktopNotificationCenter mozNotification;
 };
 
-#ifdef MOZ_WEBSMS_BACKEND
-partial interface Navigator {
-  [CheckPermissions="sms", Pref="dom.sms.enabled", AvailableIn="CertifiedApps"]
-  readonly attribute MozMobileMessageManager? mozMobileMessage;
-};
-#endif
 
 // NetworkInformation
 partial interface Navigator {
@@ -286,88 +263,24 @@ partial interface Navigator {
   void    mozSetMessageHandler (DOMString type, systemMessageCallback? callback);
   [Throws, Pref="dom.sysmsg.enabled"]
   boolean mozHasPendingMessage (DOMString type);
-
-  // This method can be called only from the systeMessageCallback function and
-  // it allows the page to set a promise to keep alive the app until the
-  // current operation is not fully completed.
-  [Throws, Pref="dom.sysmsg.enabled"]
-  void mozSetMessageHandlerPromise (Promise<any> promise);
 };
 
-#ifdef MOZ_B2G_RIL
-partial interface Navigator {
-  [Throws, Pref="dom.mobileconnection.enabled", CheckPermissions="mobileconnection mobilenetwork", UnsafeInPrerendering]
-  readonly attribute MozMobileConnectionArray mozMobileConnections;
-};
 
-partial interface Navigator {
-  [Throws, Pref="dom.cellbroadcast.enabled", CheckPermissions="cellbroadcast",
-   AvailableIn="CertifiedApps", UnsafeInPrerendering]
-  readonly attribute MozCellBroadcast mozCellBroadcast;
-};
-
-partial interface Navigator {
-  [Throws, Pref="dom.voicemail.enabled", CheckPermissions="voicemail",
-   AvailableIn="CertifiedApps", UnsafeInPrerendering]
-  readonly attribute MozVoicemail mozVoicemail;
-};
-
-partial interface Navigator {
-  [Throws, Pref="dom.icc.enabled", CheckPermissions="mobileconnection",
-   AvailableIn="CertifiedApps", UnsafeInPrerendering]
-  readonly attribute MozIccManager? mozIccManager;
-};
-
-partial interface Navigator {
-  [Throws, Pref="dom.telephony.enabled", CheckPermissions="telephony", UnsafeInPrerendering]
-  readonly attribute Telephony? mozTelephony;
-};
-#endif // MOZ_B2G_RIL
-
-#ifdef MOZ_GAMEPAD
 // https://dvcs.w3.org/hg/gamepad/raw-file/default/gamepad.html#navigator-interface-extension
 partial interface Navigator {
   [Throws, Pref="dom.gamepad.enabled"]
   sequence<Gamepad?> getGamepads();
 };
-#endif // MOZ_GAMEPAD
 
 partial interface Navigator {
   [Throws, Pref="dom.vr.enabled"]
   Promise<sequence<VRDevice>> getVRDevices();
 };
 
-#ifdef MOZ_B2G_BT
-partial interface Navigator {
-  [Throws, CheckPermissions="bluetooth", UnsafeInPrerendering]
-  readonly attribute BluetoothManager mozBluetooth;
-};
-#endif // MOZ_B2G_BT
 
-#ifdef MOZ_B2G_FM
-partial interface Navigator {
-  [Throws, CheckPermissions="fmradio", UnsafeInPrerendering]
-  readonly attribute FMRadio mozFMRadio;
-};
-#endif // MOZ_B2G_FM
 
-#ifdef MOZ_TIME_MANAGER
-// nsIDOMMozNavigatorTime
-partial interface Navigator {
-  [Throws, CheckPermissions="time", UnsafeInPrerendering]
-  readonly attribute MozTimeManager mozTime;
-};
-#endif // MOZ_TIME_MANAGER
 
-#ifdef MOZ_AUDIO_CHANNEL_MANAGER
-// nsIMozNavigatorAudioChannelManager
-partial interface Navigator {
-  [Throws]
-  readonly attribute AudioChannelManager mozAudioChannelManager;
-};
-#endif // MOZ_AUDIO_CHANNEL_MANAGER
 
-#ifdef MOZ_MEDIA_NAVIGATOR
 callback NavigatorUserMediaSuccessCallback = void (MediaStream stream);
 callback NavigatorUserMediaErrorCallback = void (MediaStreamError error);
 
@@ -394,7 +307,6 @@ partial interface Navigator {
                               // navigated away. It is optional only as legacy.
                               optional unsigned long long innerWindowID = 0);
 };
-#endif // MOZ_MEDIA_NAVIGATOR
 
 // Service Workers/Navigation Controllers
 partial interface Navigator {
@@ -414,22 +326,8 @@ partial interface Navigator {
 };
 
 partial interface Navigator {
-  [Throws, Pref="dom.inputport.enabled", CheckPermissions="inputport", AvailableIn=CertifiedApps]
-  readonly attribute InputPortManager inputPortManager;
-};
-
-#ifdef MOZ_EME
-partial interface Navigator {
-  [Pref="media.eme.apiVisible", NewObject]
+  [Pref="media.eme.enabled", Throws, NewObject]
   Promise<MediaKeySystemAccess>
   requestMediaKeySystemAccess(DOMString keySystem,
                               optional sequence<MediaKeySystemOptions> supportedConfigurations);
 };
-#endif
-
-#ifdef NIGHTLY_BUILD
-partial interface Navigator {
-  [Func="Navigator::IsE10sEnabled"]
-  readonly attribute boolean mozE10sEnabled;
-};
-#endif
