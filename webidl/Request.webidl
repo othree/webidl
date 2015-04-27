@@ -10,8 +10,7 @@
 typedef (Request or USVString) RequestInfo;
 
 [Constructor(RequestInfo input, optional RequestInit init),
- Exposed=(Window,Worker),
- Func="mozilla::dom::Headers::PrefEnabled"]
+ Exposed=(Window,Worker)]
 interface Request {
   readonly attribute ByteString method;
   readonly attribute USVString url;
@@ -23,7 +22,8 @@ interface Request {
   readonly attribute RequestCredentials credentials;
   readonly attribute RequestCache cache;
 
-  [NewObject] Request clone();
+  [Throws,
+   NewObject] Request clone();
 
   // Bug 1124638 - Allow chrome callers to set the context.
   [ChromeOnly]

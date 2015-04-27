@@ -8,8 +8,7 @@
  */
 
 [Constructor(optional BodyInit body, optional ResponseInit init),
- Exposed=(Window,Worker),
- Func="mozilla::dom::Headers::PrefEnabled"]
+ Exposed=(Window,Worker)]
 interface Response {
   [NewObject] static Response error();
   [Throws,
@@ -23,7 +22,8 @@ interface Response {
   readonly attribute ByteString statusText;
   [SameObject] readonly attribute Headers headers;
 
-  [NewObject] Response clone();
+  [Throws,
+   NewObject] Response clone();
 };
 Response implements Body;
 
