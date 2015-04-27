@@ -27,8 +27,6 @@ interface ServiceWorkerRegistration : EventTarget {
 };
 
 partial interface ServiceWorkerRegistration {
-#ifndef MOZ_SIMPLEPUSH
   [Throws, Exposed=Window, Pref="dom.push.enabled"]
   readonly attribute PushManager pushManager;
-#endif
 };

@@ -47,6 +47,7 @@ interface NavigatorID {
   readonly attribute DOMString product; // constant "Gecko"
 
   // Everyone but WebKit/Blink supports this.  See bug 679971.
+  [Exposed=Window]
   boolean taintEnabled(); // constant false
 };
 
@@ -132,7 +133,7 @@ Navigator implements NavigatorBattery;
 [NoInterfaceObject,
  Exposed=(Window,Worker)]
 interface NavigatorDataStore {
-    [Throws, NewObject, Func="Navigator::HasDataStoreSupport"]
+    [NewObject, Func="Navigator::HasDataStoreSupport"]
     Promise<sequence<DataStore>> getDataStores(DOMString name,
                                                optional DOMString? owner = null);
 };
@@ -177,7 +178,7 @@ partial interface Navigator {
   readonly attribute boolean cookieEnabled;
   [Throws]
   readonly attribute DOMString buildID;
-  [Throws, CheckPermissions="power"]
+  [Throws, CheckPermissions="power", UnsafeInPrerendering]
   readonly attribute MozPowerManager mozPower;
 
   // WebKit/Blink/Trident/Presto support this.
@@ -224,7 +225,7 @@ partial interface Navigator {
    *
    * @param aTopic resource name
    */
-  [Throws, Pref="dom.wakelock.enabled", Func="Navigator::HasWakeLockSupport"]
+  [Throws, Pref="dom.wakelock.enabled", Func="Navigator::HasWakeLockSupport", UnsafeInPrerendering]
   MozWakeLock requestWakeLock(DOMString aTopic);
 };
 
@@ -263,6 +264,12 @@ partial interface Navigator {
   void    mozSetMessageHandler (DOMString type, systemMessageCallback? callback);
   [Throws, Pref="dom.sysmsg.enabled"]
   boolean mozHasPendingMessage (DOMString type);
+
+  // This method can be called only from the systeMessageCallback function and
+  // it allows the page to set a promise to keep alive the app until the
+  // current operation is not fully completed.
+  [Throws, Pref="dom.sysmsg.enabled"]
+  void mozSetMessageHandlerPromise (Promise<any> promise);
 };
 
 
@@ -326,8 +333,18 @@ partial interface Navigator {
 };
 
 partial interface Navigator {
-  [Pref="media.eme.enabled", Throws, NewObject]
+  [Throws, Pref="dom.inputport.enabled", CheckPermissions="inputport", AvailableIn=CertifiedApps]
+  readonly attribute InputPortManager inputPortManager;
+};
+
+partial interface Navigator {
+  [Pref="media.eme.apiVisible", NewObject]
   Promise<MediaKeySystemAccess>
   requestMediaKeySystemAccess(DOMString keySystem,
                               optional sequence<MediaKeySystemOptions> supportedConfigurations);
+};
+
+partial interface Navigator {
+  [Func="Navigator::IsE10sEnabled"]
+  readonly attribute boolean mozE10sEnabled;
 };
