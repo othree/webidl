@@ -229,12 +229,19 @@ partial interface Navigator {
   MozWakeLock requestWakeLock(DOMString aTopic);
 };
 
+partial interface Navigator {
+  [Throws, Pref="device.storage.enabled"]
+  readonly attribute DeviceStorageAreaListener deviceStorageAreaListener;
+};
+
 // nsIDOMNavigatorDeviceStorage
 partial interface Navigator {
   [Throws, Pref="device.storage.enabled"]
   DeviceStorage? getDeviceStorage(DOMString type);
   [Throws, Pref="device.storage.enabled"]
   sequence<DeviceStorage> getDeviceStorages(DOMString type);
+  [Throws, Pref="device.storage.enabled"]
+  DeviceStorage? getDeviceStorageByNameAndType(DOMString name, DOMString type);
 };
 
 // nsIDOMNavigatorDesktopNotification
@@ -317,7 +324,7 @@ partial interface Navigator {
 
 // Service Workers/Navigation Controllers
 partial interface Navigator {
-  [Pref="dom.serviceWorkers.enabled"]
+  [Func="ServiceWorkerContainer::IsEnabled"]
   readonly attribute ServiceWorkerContainer serviceWorker;
 };
 
