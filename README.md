@@ -13,3 +13,8 @@ Requirement
 ===========
 
 OSX requires Node 0.10. 0.12 is not able to install dependency.
+
+Note
+====
+
+Compiled webidl path ex: `obj-x86_64-apple-darwin14.4.0/dom/bindings/*.webidl`
