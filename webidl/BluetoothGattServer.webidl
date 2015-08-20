@@ -4,11 +4,10 @@
  * You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-[Pref="dom.mobileconnection.enabled"]
-interface DOMMMIError : DOMError {
-  [Constant]
-  readonly attribute DOMString serviceCode;
-
-  [Constant]
-  readonly attribute short? additionalInformation;
+[CheckAnyPermissions="bluetooth"]
+interface BluetoothGattServer
+{
+  /* The implementation of BluetoothGattServer will come later.
+   * (see dependent bugs of bug 933358)
+   */
 };

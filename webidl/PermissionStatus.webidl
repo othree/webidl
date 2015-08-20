@@ -4,13 +4,18 @@
  * You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  * The origin of this IDL file is
- * http://dev.w3.org/fxtf/web-animations/#the-animationeffect-interface
- *
- * Copyright © 2014 W3C® (MIT, ERCIM, Keio), All Rights Reserved. W3C
- * liability, trademark and document use rules apply.
+ * https://w3c.github.io/permissions/#status-of-a-permission
  */
 
-[Func="nsDocument::IsWebAnimationsEnabled"]
-interface AnimationEffect {
-  readonly attribute DOMString name;
+enum PermissionState {
+  "granted",
+  "denied",
+  "prompt"
+};
+
+[Exposed=(Window),
+ Pref="dom.permissions.enabled"]
+interface PermissionStatus : EventTarget {
+  readonly attribute PermissionState state;
+  attribute EventHandler onchange;
 };

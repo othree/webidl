@@ -27,6 +27,6 @@ interface ServiceWorkerRegistration : EventTarget {
 };
 
 partial interface ServiceWorkerRegistration {
-  [Throws, Exposed=Window, Pref="dom.push.enabled"]
+  [Throws, Exposed=(Window,Worker), Func="nsContentUtils::PushEnabled"]
   readonly attribute PushManager pushManager;
 };

@@ -90,11 +90,16 @@ interface NavigatorStorageUtils {
 
 [NoInterfaceObject]
 interface NavigatorFeatures {
-  [CheckPermissions="feature-detection", Throws]
+  [CheckAnyPermissions="feature-detection", Throws]
   Promise<any> getFeature(DOMString name);
 
-  [CheckPermissions="feature-detection", Throws]
+  [CheckAnyPermissions="feature-detection", Throws]
   Promise<any> hasFeature(DOMString name);
+};
+
+partial interface Navigator {
+  [Throws, Pref="dom.permissions.enabled"]
+  readonly attribute Permissions permissions;
 };
 
 // Things that definitely need to be in the spec and and are not for some
@@ -178,7 +183,7 @@ partial interface Navigator {
   readonly attribute boolean cookieEnabled;
   [Throws]
   readonly attribute DOMString buildID;
-  [Throws, CheckPermissions="power", UnsafeInPrerendering]
+  [Throws, CheckAnyPermissions="power", UnsafeInPrerendering]
   readonly attribute MozPowerManager mozPower;
 
   // WebKit/Blink/Trident/Presto support this.
@@ -188,13 +193,13 @@ partial interface Navigator {
   /**
    * Navigator requests to add an idle observer to the existing window.
    */
-  [Throws, CheckPermissions="idle"]
+  [Throws, CheckAnyPermissions="idle"]
   void addIdleObserver(MozIdleObserver aIdleObserver);
 
   /**
    * Navigator requests to remove an idle observer from the existing window.
    */
-  [Throws, CheckPermissions="idle"]
+  [Throws, CheckAnyPermissions="idle"]
   void removeIdleObserver(MozIdleObserver aIdleObserver);
 
   /**
@@ -335,13 +340,18 @@ partial interface Navigator {
 };
 
 partial interface Navigator {
-  [Pref="dom.tv.enabled", CheckPermissions="tv", Func="Navigator::HasTVSupport"]
+  [Pref="dom.tv.enabled", CheckAnyPermissions="tv", Func="Navigator::HasTVSupport"]
   readonly attribute TVManager? tv;
 };
 
 partial interface Navigator {
-  [Throws, Pref="dom.inputport.enabled", CheckPermissions="inputport", AvailableIn=CertifiedApps]
+  [Throws, Pref="dom.inputport.enabled", CheckAnyPermissions="inputport", AvailableIn=CertifiedApps]
   readonly attribute InputPortManager inputPortManager;
+};
+
+partial interface Navigator {
+  [Throws, Pref="dom.presentation.enabled", CheckAnyPermissions="presentation", AvailableIn="PrivilegedApps"]
+  readonly attribute Presentation? presentation;
 };
 
 partial interface Navigator {
