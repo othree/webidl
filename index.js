@@ -1,7 +1,7 @@
 var request = require('request');
 var cheerio = require('cheerio');
 
-var execSync = require('exec-sync');
+var exec = require('sync-exec');
 
 var base = 'https://mxr.mozilla.org';
 
@@ -16,8 +16,10 @@ request(base + '/mozilla-central/source/dom/webidl/', function (error, response,
       var url = base + pathname + '?raw=1';
       var frags = pathname.split('/');
       var filename = frags[frags.length - 1];
-      console.log('wget -q "' + url + '" -O ' + filename);
-      execSync('wget -q "' + url + '" -O ' + filename);
+      if (/\.webidl$/.test(filename)) {
+        console.log('wget -q "' + url + '" -O ' + filename);
+        exec('wget -q "' + url + '" -O webidl/' + filename);
+      }
     });
 
   }
