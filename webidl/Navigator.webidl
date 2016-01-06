@@ -41,7 +41,7 @@ interface NavigatorID {
   readonly attribute DOMString appVersion;
   [Constant, Cached]
   readonly attribute DOMString platform;
-  [Constant, Cached]
+  [Pure, Cached, Throws=Workers]
   readonly attribute DOMString userAgent;
   [Constant, Cached]
   readonly attribute DOMString product; // constant "Gecko"
@@ -54,8 +54,10 @@ interface NavigatorID {
 [NoInterfaceObject, Exposed=(Window,Worker)]
 interface NavigatorLanguage {
 
-  // These 2 values are cached. They are updated when pref
-  // intl.accept_languages is changed.
+  // These two attributes are cached because this interface is also implemented
+  // by Workernavigator and this way we don't have to go back to the
+  // main-thread from the worker thread anytime we need to retrieve them. They
+  // are updated when pref intl.accept_languages is changed.
 
   [Pure, Cached]
   readonly attribute DOMString? language;
@@ -125,14 +127,15 @@ interface NavigatorGeolocation {
 Navigator implements NavigatorGeolocation;
 
 // http://www.w3.org/TR/battery-status/#navigatorbattery-interface
-[NoInterfaceObject]
-interface NavigatorBattery {
-    // XXXbz Per spec this should be non-nullable, but we return null in
-    // torn-down windows.  See bug 884925.
-    [Throws, Pref="dom.battery.enabled"]
-    readonly attribute BatteryManager? battery;
+partial interface Navigator {
+  [Throws, Pref="dom.battery.enabled"]
+  Promise<BatteryManager> getBattery();
+  // Deprecated. Use getBattery() instead.
+  // XXXbz Per spec this should be non-nullable, but we return null in
+  // torn-down windows.  See bug 884925.
+  [Throws, Pref="dom.battery.enabled", BinaryName="deprecatedBattery"]
+  readonly attribute BatteryManager? battery;
 };
-Navigator implements NavigatorBattery;
 
 // https://wiki.mozilla.org/WebAPI/DataStore
 [NoInterfaceObject,
@@ -168,6 +171,22 @@ callback interface MozIdleObserver {
   void onactive();
 };
 
+#ifdef MOZ_B2G
+dictionary MobileIdOptions {
+  boolean forceSelection = false;
+};
+
+[NoInterfaceObject]
+interface NavigatorMobileId {
+    // Ideally we would use [CheckAnyPermissions] here, but the "mobileid"
+    // permission is set to PROMPT_ACTION and [CheckAnyPermissions] only checks
+    // for ALLOW_ACTION.
+    // XXXbz what is this promise resolved with?
+    [NewObject, Func="Navigator::HasMobileIdSupport"]
+    Promise<any> getMobileIdAssertion(optional MobileIdOptions options);
+};
+Navigator implements NavigatorMobileId;
+#endif // MOZ_B2G
 
 // nsIDOMNavigator
 partial interface Navigator {
@@ -255,6 +274,12 @@ partial interface Navigator {
   readonly attribute DesktopNotificationCenter mozNotification;
 };
 
+#ifdef MOZ_WEBSMS_BACKEND
+partial interface Navigator {
+  [CheckAnyPermissions="sms", Pref="dom.sms.enabled", AvailableIn="CertifiedApps"]
+  readonly attribute MozMobileMessageManager? mozMobileMessage;
+};
+#endif
 
 // NetworkInformation
 partial interface Navigator {
@@ -284,22 +309,80 @@ partial interface Navigator {
   void mozSetMessageHandlerPromise (Promise<any> promise);
 };
 
+#ifdef MOZ_B2G_RIL
+partial interface Navigator {
+  [Throws, Pref="dom.mobileconnection.enabled", CheckAnyPermissions="mobileconnection mobilenetwork", UnsafeInPrerendering]
+  readonly attribute MozMobileConnectionArray mozMobileConnections;
+};
 
+partial interface Navigator {
+  [Throws, Pref="dom.cellbroadcast.enabled", CheckAnyPermissions="cellbroadcast",
+   AvailableIn="CertifiedApps", UnsafeInPrerendering]
+  readonly attribute MozCellBroadcast mozCellBroadcast;
+};
+
+partial interface Navigator {
+  [Throws, Pref="dom.voicemail.enabled", CheckAnyPermissions="voicemail",
+   AvailableIn="CertifiedApps", UnsafeInPrerendering]
+  readonly attribute MozVoicemail mozVoicemail;
+};
+
+partial interface Navigator {
+  [Throws, Pref="dom.icc.enabled", CheckAnyPermissions="mobileconnection",
+   AvailableIn="CertifiedApps", UnsafeInPrerendering]
+  readonly attribute MozIccManager? mozIccManager;
+};
+
+partial interface Navigator {
+  [Throws, Pref="dom.telephony.enabled", CheckAnyPermissions="telephony", UnsafeInPrerendering]
+  readonly attribute Telephony? mozTelephony;
+};
+#endif // MOZ_B2G_RIL
+
+#ifdef MOZ_GAMEPAD
 // https://dvcs.w3.org/hg/gamepad/raw-file/default/gamepad.html#navigator-interface-extension
 partial interface Navigator {
   [Throws, Pref="dom.gamepad.enabled"]
   sequence<Gamepad?> getGamepads();
 };
+#endif // MOZ_GAMEPAD
 
 partial interface Navigator {
   [Throws, Pref="dom.vr.enabled"]
   Promise<sequence<VRDevice>> getVRDevices();
 };
 
+#ifdef MOZ_B2G_BT
+partial interface Navigator {
+  [Throws, CheckAnyPermissions="bluetooth", UnsafeInPrerendering]
+  readonly attribute BluetoothManager mozBluetooth;
+};
+#endif // MOZ_B2G_BT
 
+#ifdef MOZ_B2G_FM
+partial interface Navigator {
+  [Throws, CheckAnyPermissions="fmradio", UnsafeInPrerendering]
+  readonly attribute FMRadio mozFMRadio;
+};
+#endif // MOZ_B2G_FM
 
+#ifdef MOZ_TIME_MANAGER
+// nsIDOMMozNavigatorTime
+partial interface Navigator {
+  [Throws, CheckAnyPermissions="time", UnsafeInPrerendering]
+  readonly attribute MozTimeManager mozTime;
+};
+#endif // MOZ_TIME_MANAGER
 
+#ifdef MOZ_AUDIO_CHANNEL_MANAGER
+// nsIMozNavigatorAudioChannelManager
+partial interface Navigator {
+  [Throws]
+  readonly attribute AudioChannelManager mozAudioChannelManager;
+};
+#endif // MOZ_AUDIO_CHANNEL_MANAGER
 
+#ifdef MOZ_MEDIA_NAVIGATOR
 callback NavigatorUserMediaSuccessCallback = void (MediaStream stream);
 callback NavigatorUserMediaErrorCallback = void (MediaStreamError error);
 
@@ -308,7 +391,8 @@ partial interface Navigator {
   readonly attribute MediaDevices mediaDevices;
 
   // Deprecated. Use mediaDevices.getUserMedia instead.
-  [Throws, Func="Navigator::HasUserMediaSupport", UnsafeInPrerendering]
+  [Deprecated="NavigatorGetUserMedia", Throws,
+   Func="Navigator::HasUserMediaSupport", UnsafeInPrerendering]
   void mozGetUserMedia(MediaStreamConstraints constraints,
                        NavigatorUserMediaSuccessCallback successCallback,
                        NavigatorUserMediaErrorCallback errorCallback);
@@ -326,6 +410,7 @@ partial interface Navigator {
                               // navigated away. It is optional only as legacy.
                               optional unsigned long long innerWindowID = 0);
 };
+#endif // MOZ_MEDIA_NAVIGATOR
 
 // Service Workers/Navigation Controllers
 partial interface Navigator {
@@ -340,7 +425,7 @@ partial interface Navigator {
 };
 
 partial interface Navigator {
-  [Pref="dom.tv.enabled", CheckAnyPermissions="tv", Func="Navigator::HasTVSupport"]
+  [Pref="dom.tv.enabled", CheckAnyPermissions="tv", AvailableIn=CertifiedApps]
   readonly attribute TVManager? tv;
 };
 
@@ -350,18 +435,27 @@ partial interface Navigator {
 };
 
 partial interface Navigator {
-  [Throws, Pref="dom.presentation.enabled", CheckAnyPermissions="presentation", AvailableIn="PrivilegedApps"]
+  [Throws, Pref="dom.presentation.enabled", Func="Navigator::HasPresentationSupport", SameObject]
   readonly attribute Presentation? presentation;
 };
 
 partial interface Navigator {
+  [NewObject, Pref="dom.mozTCPSocket.enabled", CheckAnyPermissions="tcp-socket"]
+  readonly attribute LegacyMozTCPSocket mozTCPSocket;
+};
+
+#ifdef MOZ_EME
+partial interface Navigator {
   [Pref="media.eme.apiVisible", NewObject]
   Promise<MediaKeySystemAccess>
   requestMediaKeySystemAccess(DOMString keySystem,
-                              optional sequence<MediaKeySystemOptions> supportedConfigurations);
+                              sequence<MediaKeySystemConfiguration> supportedConfigurations);
 };
+#endif
 
+#ifdef NIGHTLY_BUILD
 partial interface Navigator {
   [Func="Navigator::IsE10sEnabled"]
   readonly attribute boolean mozE10sEnabled;
 };
+#endif

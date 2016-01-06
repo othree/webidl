@@ -7,6 +7,7 @@
  * http://dom.spec.whatwg.org
  */
 
+[ProbablyShortLivingObject]
 interface MutationRecord {
   [Constant]
   readonly attribute DOMString type;
@@ -60,6 +61,8 @@ dictionary MutationObserverInit {
   boolean subtree = false;
   boolean attributeOldValue;
   boolean characterDataOldValue;
+  // [ChromeOnly]
+  boolean nativeAnonymousChildList = false;
   // [ChromeOnly]
   boolean animations;
   sequence<DOMString> attributeFilter;

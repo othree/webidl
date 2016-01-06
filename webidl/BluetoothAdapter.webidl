@@ -43,7 +43,7 @@ interface BluetoothAdapter : EventTarget {
   readonly attribute BluetoothGattServer?   gattServer;
 
   [AvailableIn=CertifiedApps]
-  readonly attribute BluetoothPairingListener pairingReqs;
+  readonly attribute BluetoothPairingListener? pairingReqs;
 
   // Fired when attribute(s) of BluetoothAdapter changed
            attribute EventHandler   onattributechanged;
@@ -68,6 +68,36 @@ interface BluetoothAdapter : EventTarget {
 
   // Fired when remote devices query current media play status
            attribute EventHandler   onrequestmediaplaystatus;
+
+  // Fired when remote devices request password for OBEX authentication
+           attribute EventHandler   onobexpasswordreq;
+
+  // Fired when PBAP manager requests for 'pullphonebook'
+           attribute EventHandler   onpullphonebookreq;
+
+  // Fired when PBAP manager requests for 'pullvcardentry'
+           attribute EventHandler   onpullvcardentryreq;
+
+  // Fired when PBAP manager requests for 'pullvcardlisting'
+           attribute EventHandler   onpullvcardlistingreq;
+
+  // Fired when remote devices request to list SMS/MMS/Email folders
+           attribute EventHandler   onmapfolderlistingreq;
+
+  // Fired when remote devices request to list SMS/MMS/Email messages
+           attribute EventHandler   onmapmessageslistingreq;
+
+  // Fired when remote devices fetch the specific message
+           attribute EventHandler   onmapgetmessagereq;
+
+  // Fired when remote devices set message status
+           attribute EventHandler   onmapsetmessagestatusreq;
+
+  // Fired when remote devices send out SMS/MMS/Email message
+           attribute EventHandler   onmapsendmessagereq;
+
+  // Fired when remote devices download SMS/MMS/Email messages
+           attribute EventHandler   onmapmessageupdatereq;
 
   /**
    * Enable/Disable a local bluetooth adapter by asynchronus methods and return

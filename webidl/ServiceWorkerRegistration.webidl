@@ -17,9 +17,10 @@ interface ServiceWorkerRegistration : EventTarget {
 
   readonly attribute USVString scope;
 
-  void update();
+  [Throws, NewObject]
+  Promise<void> update();
 
-  [Throws]
+  [Throws, NewObject]
   Promise<boolean> unregister();
 
   // event
@@ -27,6 +28,8 @@ interface ServiceWorkerRegistration : EventTarget {
 };
 
 partial interface ServiceWorkerRegistration {
+#ifndef MOZ_SIMPLEPUSH
   [Throws, Exposed=(Window,Worker), Func="nsContentUtils::PushEnabled"]
   readonly attribute PushManager pushManager;
+#endif
 };

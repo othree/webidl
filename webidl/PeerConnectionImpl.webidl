@@ -5,7 +5,7 @@
  *
  * PeerConnection.js' interface to the C++ PeerConnectionImpl.
  *
- * Do not confuse with mozRTCPeerConnection. This interface is purely for
+ * Do not confuse with RTCPeerConnection. This interface is purely for
  * communication between the PeerConnection JS DOM binding and the C++
  * implementation in SIPCC.
  *
@@ -46,6 +46,11 @@ interface PeerConnectionImpl  {
   void removeTrack(MediaStreamTrack track);
   [Throws]
   void replaceTrack(MediaStreamTrack thisTrack, MediaStreamTrack withTrack);
+  [Throws]
+  void setParameters(MediaStreamTrack track,
+                     optional RTCRtpParameters parameters);
+  [Throws]
+  RTCRtpParameters getParameters(MediaStreamTrack track);
   [Throws]
   void closeStreams();
 

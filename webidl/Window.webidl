@@ -31,7 +31,7 @@ typedef any Transferable;
   [Replaceable, Constant, StoreInSlot,
    CrossOriginReadable] readonly attribute Window self;
   [Unforgeable, StoreInSlot, Pure] readonly attribute Document? document;
-  [Throws] attribute DOMString name; 
+  [Throws] attribute DOMString name;
   [PutForwards=href, Unforgeable, Throws,
    CrossOriginReadable, CrossOriginWritable] readonly attribute Location? location;
   [Throws] readonly attribute History history;
@@ -65,8 +65,10 @@ typedef any Transferable;
   getter object (DOMString name);
 
   // the user agent
-  [Throws] readonly attribute Navigator navigator; 
+  [Throws] readonly attribute Navigator navigator;
+#ifdef HAVE_SIDEBAR
   [Replaceable, Throws] readonly attribute External external;
+#endif
   [Throws] readonly attribute ApplicationCache applicationCache;
 
   // user prompts
@@ -244,6 +246,7 @@ partial interface Window {
 // https://dvcs.w3.org/hg/webcrypto-api/raw-file/tip/spec/Overview.html
 Window implements GlobalCrypto;
 
+#ifdef MOZ_WEBSPEECH
 // http://dvcs.w3.org/hg/speech-api/raw-file/tip/speechapi.html
 [NoInterfaceObject]
 interface SpeechSynthesisGetter {
@@ -251,6 +254,7 @@ interface SpeechSynthesisGetter {
 };
 
 Window implements SpeechSynthesisGetter;
+#endif
 
 // http://www.whatwg.org/specs/web-apps/current-work/
 [NoInterfaceObject]
@@ -262,7 +266,7 @@ Window implements WindowModal;
 
 // https://slightlyoff.github.io/ServiceWorker/spec/service_worker/index.html#self-caches
 partial interface Window {
-[Throws, Func="mozilla::dom::cache::CacheStorage::PrefEnabled"]
+[Throws, Func="mozilla::dom::cache::CacheStorage::PrefEnabled", SameObject]
 readonly attribute CacheStorage caches;
 };
 
@@ -298,6 +302,8 @@ partial interface Window {
 
   /* The maximum offset that the window can be scrolled to
      (i.e., the document width/height minus the scrollport width/height) */
+  [ChromeOnly, Throws]  readonly attribute long   scrollMinX;
+  [ChromeOnly, Throws]  readonly attribute long   scrollMinY;
   [Replaceable, Throws] readonly attribute long   scrollMaxX;
   [Replaceable, Throws] readonly attribute long   scrollMaxY;
 
@@ -339,7 +345,7 @@ partial interface Window {
    * This property exists because static attributes don't yet work for
    * JS-implemented WebIDL (see bugs 1058606 and 863952). With this hack, we
    * can use `MozSelfSupport.something(...)`, which will continue to work
-   * after we ditch this property and switch to static attributes. See 
+   * after we ditch this property and switch to static attributes. See
    */
   [ChromeOnly, Throws] readonly attribute MozSelfSupport MozSelfSupport;
 
@@ -352,6 +358,11 @@ partial interface Window {
            attribute EventHandler onuserproximity;
            attribute EventHandler ondevicelight;
 
+#ifdef MOZ_B2G
+           attribute EventHandler onmoztimechange;
+           attribute EventHandler onmoznetworkupload;
+           attribute EventHandler onmoznetworkdownload;
+#endif
 
   void                      dump(DOMString str);
 
@@ -389,17 +400,27 @@ Window implements TouchEventHandlers;
 
 Window implements OnErrorEventHandlerForWindow;
 
+#if defined(MOZ_WIDGET_ANDROID) || defined(MOZ_WIDGET_GONK)
+// https://compat.spec.whatwg.org/#windoworientation-interface
+partial interface Window {
+  readonly attribute short orientation;
+           attribute EventHandler onorientationchange;
+};
+#endif
+
 // ConsoleAPI
 partial interface Window {
   [Replaceable, GetterThrows]
   readonly attribute Console console;
 };
 
+#ifdef HAVE_SIDEBAR
 // Mozilla extension
 partial interface Window {
-  [Replaceable, Throws]
+  [Replaceable, Throws, UseCounter]
   readonly attribute (External or WindowProxy) sidebar;
 };
+#endif
 
 [Func="IsChromeOrXBL"]
 interface ChromeWindow {
