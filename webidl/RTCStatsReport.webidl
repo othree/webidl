@@ -9,14 +9,14 @@
  */
 
 enum RTCStatsType {
-  "inboundrtp",
-  "outboundrtp",
+  "inbound-rtp",
+  "outbound-rtp",
   "session",
   "track",
   "transport",
-  "candidatepair",
-  "localcandidate",
-  "remotecandidate"
+  "candidate-pair",
+  "local-candidate",
+  "remote-candidate"
 };
 
 dictionary RTCStats {
@@ -146,8 +146,6 @@ dictionary RTCCodecStats : RTCStats {
   DOMString parameters;            // From SDP description line
 };
 
-callback RTCStatsReportCallback = void (RTCStatsReport obj);
-
 // This is the internal representation of the report in this implementation
 // to be received from c++
 
@@ -165,6 +163,8 @@ dictionary RTCStatsReportInternal {
   DOMString                           localSdp;
   DOMString                           remoteSdp;
   DOMHighResTimeStamp                 timestamp;
+  unsigned long                       iceRestarts;
+  unsigned long                       iceRollbacks;
   boolean                             closed; // Is the PC now closed
 };
 
@@ -173,9 +173,7 @@ dictionary RTCStatsReportInternal {
 // MapClass(DOMString, object)
  JSImplementation="@mozilla.org/dom/rtcstatsreport;1"]
 interface RTCStatsReport {
+  readonly maplike<DOMString, object>;
   [ChromeOnly]
   readonly attribute DOMString mozPcid;
-  void forEach(RTCStatsReportCallback callbackFn, optional any thisArg);
-  object get(DOMString key);
-  boolean has(DOMString key);
 };

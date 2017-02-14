@@ -12,6 +12,7 @@
  */
 
 // http://www.whatwg.org/specs/web-apps/current-work/#the-a-element
+[HTMLConstructor]
 interface HTMLAnchorElement : HTMLElement {
            [SetterThrows]
            attribute DOMString target;
@@ -23,6 +24,7 @@ interface HTMLAnchorElement : HTMLElement {
            attribute DOMString rel;
            [SetterThrows, Pref="network.http.enablePerElementReferrer"]
            attribute DOMString referrerPolicy;
+           [PutForwards=value]
   readonly attribute DOMTokenList relList;
            [SetterThrows]
            attribute DOMString hreflang;

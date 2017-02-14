@@ -11,7 +11,7 @@
  * related or neighboring rights to this work.
  */
 
-[Constructor(DOMString type, optional NotificationEventInit eventInitDict),
+[Constructor(DOMString type, NotificationEventInit eventInitDict),
  Exposed=ServiceWorker,Func="mozilla::dom::Notification::PrefEnabled"]
 interface NotificationEvent : ExtendableEvent {
   readonly attribute Notification notification;
@@ -19,8 +19,4 @@ interface NotificationEvent : ExtendableEvent {
 
 dictionary NotificationEventInit : ExtendableEventInit {
   required Notification notification;
-};
-
-partial interface ServiceWorkerGlobalScope {
-  attribute EventHandler onnotificationclick;
 };

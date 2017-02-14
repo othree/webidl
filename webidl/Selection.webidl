@@ -45,6 +45,12 @@ interface Selection {
   [Throws]
   boolean            containsNode(Node node, boolean allowPartialContainment);
 
+  [Throws]
+  void               setBaseAndExtent(Node anchorNode,
+                                      unsigned long anchorOffset,
+                                      Node focusNode,
+                                      unsigned long focusOffset);
+
   stringifier;
 };
 
@@ -76,7 +82,7 @@ partial interface Selection {
   [ChromeOnly,Throws]
   void  removeSelectionListener(nsISelectionListener listenerToRemove);
 
-  [ChromeOnly]
+  [ChromeOnly,BinaryName="rawType"]
   readonly attribute short type;
 
   [ChromeOnly,Throws,Pref="dom.testing.selection.GetRangesForInterval"]

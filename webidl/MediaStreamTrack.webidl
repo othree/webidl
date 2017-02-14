@@ -54,10 +54,18 @@ dictionary MediaTrackConstraintSet {
     ConstrainLong viewportOffsetY;
     ConstrainLong viewportWidth;
     ConstrainLong viewportHeight;
+    ConstrainBoolean echoCancellation;
+    ConstrainBoolean mozNoiseSuppression;
+    ConstrainBoolean mozAutoGainControl;
 };
 
 dictionary MediaTrackConstraints : MediaTrackConstraintSet {
     sequence<MediaTrackConstraintSet> advanced;
+};
+
+enum MediaStreamTrackState {
+    "live",
+    "ended"
 };
 
 [Exposed=Window]
@@ -71,15 +79,15 @@ interface MediaStreamTrack : EventTarget {
 //              attribute EventHandler          onunmute;
 //  readonly    attribute boolean               _readonly;
 //  readonly    attribute boolean               remote;
-//  readonly    attribute MediaStreamTrackState readyState;
-//                attribute EventHandler          onended;
-//  MediaStreamTrack       clone ();
+    readonly    attribute MediaStreamTrackState readyState;
+                attribute EventHandler          onended;
+    MediaStreamTrack       clone ();
     void                   stop ();
 //  MediaTrackCapabilities getCapabilities ();
-//  MediaTrackConstraints  getConstraints ();
-//  MediaTrackSettings     getSettings ();
+    MediaTrackConstraints  getConstraints ();
+    MediaTrackSettings     getSettings ();
 
-    [Throws]
+    [Throws, NeedsCallerType]
     Promise<void>          applyConstraints (optional MediaTrackConstraints constraints);
 //              attribute EventHandler          onoverconstrained;
 };

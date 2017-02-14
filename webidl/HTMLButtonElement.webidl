@@ -11,6 +11,7 @@
  */
 
 // http://www.whatwg.org/specs/web-apps/current-work/#the-button-element
+[HTMLConstructor]
 interface HTMLButtonElement : HTMLElement {
   [SetterThrows, Pure]
            attribute boolean autofocus;
@@ -41,6 +42,7 @@ interface HTMLButtonElement : HTMLElement {
   readonly attribute ValidityState validity;
   readonly attribute DOMString validationMessage;
   boolean checkValidity();
+  boolean reportValidity();
   void setCustomValidity(DOMString error);
 
 // Not yet implemented:
