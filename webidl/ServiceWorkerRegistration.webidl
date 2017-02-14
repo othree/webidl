@@ -5,10 +5,11 @@
  *
  * The origin of this IDL file is
  * http://slightlyoff.github.io/ServiceWorker/spec/service_worker/index.html
- *
+ * https://w3c.github.io/push-api/
+ * https://notifications.spec.whatwg.org/
  */
 
-[Func="mozilla::dom::ServiceWorkerRegistrationVisible",
+[Func="mozilla::dom::ServiceWorkerRegistration::Visible",
  Exposed=(Window,Worker)]
 interface ServiceWorkerRegistration : EventTarget {
   [Unforgeable] readonly attribute ServiceWorker? installing;
@@ -27,7 +28,16 @@ interface ServiceWorkerRegistration : EventTarget {
   attribute EventHandler onupdatefound;
 };
 
+// https://w3c.github.io/push-api/
 partial interface ServiceWorkerRegistration {
   [Throws, Exposed=(Window,Worker), Func="nsContentUtils::PushEnabled"]
   readonly attribute PushManager pushManager;
+};
+
+// https://notifications.spec.whatwg.org/
+partial interface ServiceWorkerRegistration {
+  [Throws, Func="mozilla::dom::ServiceWorkerRegistration::NotificationAPIVisible"]
+  Promise<void> showNotification(DOMString title, optional NotificationOptions options);
+  [Throws, Func="mozilla::dom::ServiceWorkerRegistration::NotificationAPIVisible"]
+  Promise<sequence<Notification>> getNotifications(optional GetNotificationOptions filter);
 };

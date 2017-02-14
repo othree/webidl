@@ -10,6 +10,19 @@
  * liability, trademark and document use rules apply.
  */
 
+
+dictionary EventListenerOptions {
+  boolean capture = false;
+  /* Setting to true make the listener be added to the system group. */
+  [Func="ThreadSafeIsChromeOrXBL"]
+  boolean mozSystemGroup = false;
+};
+
+dictionary AddEventListenerOptions : EventListenerOptions {
+  boolean passive = false;
+  boolean once = false;
+};
+
 [Exposed=(Window,Worker,WorkerDebugger,System)]
 interface EventTarget {
   /* Passing null for wantsUntrusted means "default behavior", which
@@ -19,13 +32,13 @@ interface EventTarget {
   [Throws]
   void addEventListener(DOMString type,
                         EventListener? listener,
-                        optional boolean capture = false,
+                        optional (AddEventListenerOptions or boolean) options,
                         optional boolean? wantsUntrusted = null);
   [Throws]
   void removeEventListener(DOMString type,
                            EventListener? listener,
-                           optional boolean capture = false);
-  [Throws]
+                           optional (EventListenerOptions or boolean) options);
+  [Throws, NeedsCallerType]
   boolean dispatchEvent(Event event);
 };
 

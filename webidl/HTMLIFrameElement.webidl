@@ -11,6 +11,7 @@
  * and create derivative works of this document.
  */
 
+[HTMLConstructor]
 interface HTMLIFrameElement : HTMLElement {
   [SetterThrows, Pure]
            attribute DOMString src;
@@ -18,7 +19,7 @@ interface HTMLIFrameElement : HTMLElement {
            attribute DOMString srcdoc;
   [SetterThrows, Pure]
            attribute DOMString name;
-  [PutForwards=value] readonly attribute DOMSettableTokenList sandbox;
+  [PutForwards=value] readonly attribute DOMTokenList sandbox;
            // attribute boolean seamless;
   [SetterThrows, Pure]
            attribute boolean allowFullscreen;
@@ -28,6 +29,7 @@ interface HTMLIFrameElement : HTMLElement {
            attribute DOMString height;
   [SetterThrows, Pure, Pref="network.http.enablePerElementReferrer"]
            attribute DOMString referrerPolicy;
+  [NeedsSubjectPrincipal]
   readonly attribute Document? contentDocument;
   readonly attribute WindowProxy? contentWindow;
 };
@@ -49,6 +51,7 @@ partial interface HTMLIFrameElement {
 
 partial interface HTMLIFrameElement {
   // GetSVGDocument
+  [NeedsSubjectPrincipal]
   Document? getSVGDocument();
 };
 
@@ -56,12 +59,6 @@ partial interface HTMLIFrameElement {
   // nsIDOMMozBrowserFrame
   [ChromeOnly,SetterThrows]
            attribute boolean mozbrowser;
-};
-
-partial interface HTMLIFrameElement {
-  // nsIMozBrowserFrame
-  [ChromeOnly]
-  readonly attribute DOMString appManifestURL;
 };
 
 HTMLIFrameElement implements MozFrameLoaderOwner;

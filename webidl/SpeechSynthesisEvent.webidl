@@ -10,12 +10,13 @@
  * liability, trademark and document use rules apply.
  */
 
-[Constructor(DOMString type, optional SpeechSynthesisEventInit eventInitDict),
+[Constructor(DOMString type, SpeechSynthesisEventInit eventInitDict),
  Pref="media.webspeech.synth.enabled"]
 interface SpeechSynthesisEvent : Event
 {
   readonly attribute SpeechSynthesisUtterance utterance;
   readonly attribute unsigned long charIndex;
+  readonly attribute unsigned long? charLength;
   readonly attribute float elapsedTime;
   readonly attribute DOMString? name;
 };
@@ -24,6 +25,7 @@ dictionary SpeechSynthesisEventInit : EventInit
 {
   required SpeechSynthesisUtterance utterance;
   unsigned long charIndex = 0;
+  unsigned long? charLength = null;
   float elapsedTime = 0;
   DOMString name = "";
 };

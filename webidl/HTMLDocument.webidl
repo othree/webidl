@@ -30,7 +30,6 @@ interface HTMLDocument : Document {
   [Pure]
   readonly attribute HTMLCollection scripts;
   NodeList getElementsByName(DOMString elementName);
-  NodeList getItems(optional DOMString typeNames = ""); // microdata
 
   // dynamic markup insertion
   [Throws]
@@ -44,17 +43,18 @@ interface HTMLDocument : Document {
   [Throws]
   void writeln(DOMString... text);
 
-           [SetterThrows]
+  [SetterThrows, NeedsSubjectPrincipal]
            attribute DOMString designMode;
-  [Throws]
+  [Throws, NeedsSubjectPrincipal]
   boolean execCommand(DOMString commandId, optional boolean showUI = false,
                       optional DOMString value = "");
-  [Throws]
+  [Throws, NeedsSubjectPrincipal]
   boolean queryCommandEnabled(DOMString commandId);
   [Throws]
   boolean queryCommandIndeterm(DOMString commandId);
   [Throws]
   boolean queryCommandState(DOMString commandId);
+  [NeedsCallerType]
   boolean queryCommandSupported(DOMString commandId);
   [Throws]
   DOMString queryCommandValue(DOMString commandId);

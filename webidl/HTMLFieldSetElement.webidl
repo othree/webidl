@@ -11,6 +11,7 @@
  * and create derivative works of this document.
  */
 
+[HTMLConstructor]
 interface HTMLFieldSetElement : HTMLElement {
   [SetterThrows]
            attribute boolean disabled;
@@ -27,6 +28,7 @@ interface HTMLFieldSetElement : HTMLElement {
   readonly attribute DOMString validationMessage;
 
   boolean checkValidity();
+  boolean reportValidity();
 
   void setCustomValidity(DOMString error);
 };

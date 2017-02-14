@@ -12,6 +12,7 @@
  * and create derivative works of this document.
  */
 
+[HTMLConstructor]
 interface HTMLElement : Element {
   // metadata attributes
            attribute DOMString title;
@@ -22,25 +23,13 @@ interface HTMLElement : Element {
   [Constant]
   readonly attribute DOMStringMap dataset;
 
-  [GetterThrows, Pure]
+  [GetterThrows, Pure, TreatNullAs=EmptyString]
            attribute DOMString innerText;
-
-  // microdata 
-  [SetterThrows, Pure]
-           attribute boolean itemScope;
-  [PutForwards=value,Constant] readonly attribute DOMSettableTokenList itemType;
-  [SetterThrows, Pure]
-           attribute DOMString itemId;
-  [PutForwards=value,Constant] readonly attribute DOMSettableTokenList itemRef;
-  [PutForwards=value,Constant] readonly attribute DOMSettableTokenList itemProp;
-  [Constant]
-  readonly attribute HTMLPropertiesCollection properties;
-  [Throws]
-           attribute any itemValue;
 
   // user interaction
   [SetterThrows, Pure]
            attribute boolean hidden;
+  [NeedsCallerType]
   void click();
   [SetterThrows, Pure]
            attribute long tabIndex;
@@ -54,7 +43,7 @@ interface HTMLElement : Element {
   readonly attribute DOMString accessKeyLabel;
   [SetterThrows, Pure]
            attribute boolean draggable;
-  //[PutForwards=value] readonly attribute DOMSettableTokenList dropzone;
+  //[PutForwards=value] readonly attribute DOMTokenList dropzone;
   [SetterThrows, Pure]
            attribute DOMString contentEditable;
   [Pure]
@@ -77,11 +66,6 @@ interface HTMLElement : Element {
   // styling
   [PutForwards=cssText, Constant]
   readonly attribute CSSStyleDeclaration style;
-
-  // Mozilla specific stuff
-           attribute EventHandler oncopy;
-           attribute EventHandler oncut;
-           attribute EventHandler onpaste;
 };
 
 // http://dev.w3.org/csswg/cssom-view/#extensions-to-the-htmlelement-interface
@@ -114,6 +98,7 @@ interface TouchEventHandlers {
 };
 
 HTMLElement implements GlobalEventHandlers;
+HTMLElement implements DocumentAndElementEventHandlers;
 HTMLElement implements TouchEventHandlers;
 HTMLElement implements OnErrorEventHandlerForNodes;
 

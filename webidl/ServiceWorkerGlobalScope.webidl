@@ -5,6 +5,8 @@
  *
  * The origin of this IDL file is
  * http://slightlyoff.github.io/ServiceWorker/spec/service_worker/index.html
+ * http://w3c.github.io/push-api/
+ * https://notifications.spec.whatwg.org/
  *
  * You are granted a license to use, reproduce and create derivative works of
  * this document.
@@ -17,12 +19,11 @@ interface ServiceWorkerGlobalScope : WorkerGlobalScope {
   [SameObject] readonly attribute ServiceWorkerRegistration registration;
 
   [Throws, NewObject]
-  Promise<boolean> skipWaiting();
+  Promise<void> skipWaiting();
 
   attribute EventHandler oninstall;
   attribute EventHandler onactivate;
 
-  [Func="mozilla::dom::workers::ServiceWorkerGlobalScope::InterceptionEnabled"]
   attribute EventHandler onfetch;
 
   // The event.source of these MessageEvents are instances of Client
@@ -35,3 +36,8 @@ partial interface ServiceWorkerGlobalScope {
   attribute EventHandler onpushsubscriptionchange;
 };
 
+// https://notifications.spec.whatwg.org/
+partial interface ServiceWorkerGlobalScope {
+  attribute EventHandler onnotificationclick;
+  attribute EventHandler onnotificationclose;
+};
