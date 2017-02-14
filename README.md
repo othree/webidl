@@ -1,7 +1,7 @@
 WEBIDL files
 ============
 
-All webidl files from https://mxr.mozilla.org/mozilla-central/source/dom/webidl/  
+All webidl files from https://dxr.mozilla.org/mozilla-central/source/dom/webidl/  
 Including the `CSS2Properties.webidl`.
 
 Because the mozilla-central project is very huge(1.83GB).
@@ -18,3 +18,4 @@ Note
 ====
 
 Compiled webidl path ex: `obj-x86_64-apple-darwin14.4.0/dom/bindings/*.webidl`
+
