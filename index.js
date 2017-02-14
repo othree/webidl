@@ -4,6 +4,7 @@ var cheerio = require('cheerio');
 var exec = require('sync-exec');
 
 var base = 'https://dxr.mozilla.org';
+var hgBase = 'https://hg.mozilla.org';
 
 var sourcePath = '/mozilla-central/source';
 var rawPath = '/mozilla-central/raw-file';
@@ -27,7 +28,7 @@ request(base + sourcePath + path + '/', function (error, response, body) {
           var pathname = link[0].attribs.href;
           var frags = pathname.split('/');
 
-          var rawBase = base + rawPath + '/' + frags[5] + path;
+          var rawBase = hgBase + rawPath + '/' + frags[5] + path;
 
           links.map(function (i, node) {
             var pathname = node.attribs.href;
